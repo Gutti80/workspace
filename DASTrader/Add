@@ -13,3 +13,4 @@ if ( $mprice_ask > $mybreakeven ) {
     ROUTE="Limit"; Price=$limit_ask; Share=StopPrice; TIF=DAY+; BUY=Send;
     $set_to_breakeven = 1;
 }
+fff

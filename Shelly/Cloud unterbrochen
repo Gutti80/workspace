@@ -1,0 +1,248 @@
+let CONFIG = {
+  open_meteo_url: "https://api.open-meteo.com/v1/forecast?latitude=48.33&longitude=16.36&models=icon_seamless&daily=temperature_2m_min,rain_sum&past_days=1&forecast_days=1&timezone=Europe%2FBerlin", 
+  minTemp: 5, //minimum Temperature for Irrigation
+  minRain: 7, // Set rain value in mm which is enought for you. Usually is 3-5 mm per day.
+  switchOffTime: 0, // default to immediately stop
+  BackupRain: 1.8,
+  BackupTemp: 15,
+  sendWhatsapp: 1,
+  //sendNtfy: 1,
+};
+
+let maxBeregnungsZeit = [0,0,0]; 
+let minBeregnungsZeit = [0,0,0];
+let currentTemp;
+
+let percentage;
+
+let timerGrosseRegner;
+let timerTropfSchlauch;
+let timerMessages;
+
+let messageWhatsapp ="";
+let messageNtfy ="";
+
+print("Script started...");
+print("min. Temperature for Irrigation: ",CONFIG.minTemp,"C");
+print("daily Irrigation necessary: ",CONFIG.minRain,"mm");
+
+ 
+ 
+ 
+ function AutoOffAbfragen1() {
+   Shelly.call("http.get",{ url: "http://192.168.33.2/rpc/Shelly.GetConfig" , timeout: 3 }, AutoOffAbfrage1Callback);
+ };
+ 
+ function AutoOffAbfragen2() {
+   Shelly.call("http.get",{ url: "http://192.168.33.3/rpc/Shelly.GetConfig" , timeout: 3 }, AutoOffAbfrage2Callback);
+ };
+ 
+ 
+ function AutoOffAbfrage1Callback(response, error_code, error_message) {
+      if (error_code === 0) {
+        let antwort = JSON.parse(response.body);
+        let AutoOff = antwort['switch:0']['auto_off_delay'];
+        maxBeregnungsZeit[1] = AutoOff;
+        let AutoOn = antwort['switch:0']['auto_on_delay'];
+        minBeregnungsZeit[1] = AutoOn;
+        print(maxBeregnungsZeit[1]);
+        AutoOffAbfragen2();
+        return;
+      } else {
+      };
+ };
+ 
+ function AutoOffAbfrage2Callback(response, error_code, error_message) {
+      if (error_code === 0) {
+        let antwort = JSON.parse(response.body);
+        let AutoOff = antwort['switch:0']['auto_off_delay'];
+        maxBeregnungsZeit[2] = AutoOff;
+        let AutoOn = antwort['switch:0']['auto_on_delay'];
+        minBeregnungsZeit[2] = AutoOn;
+        print(maxBeregnungsZeit[2]);
+        ReadWeatherData();
+        return
+      } else {
+        
+      };
+ };
+ 
+ 
+ // This function reads the rain value in the last 12 hours
+function ReadWeatherData() {
+  print ("Checking Weather...");
+  Shelly.call("http.get",{ url: CONFIG.open_meteo_url , timeout: 10 }, ReadWeatherDataCallback);
+};
+
+ function ReadWeatherDataCallback(response, error_code, error_message) {
+      let RainValuePast;
+      let RainValueForecast;
+      let currentTemp;
+      if (error_code !== 0) {
+        print ("Service unavailable...Using Backup-Values..."); // HTTP call to error service failed
+        RainValuePast = CONFIG.BackupRain;
+        currentTemp = CONFIG.BackupTemp;
+      } else {
+        let weatherData = JSON.parse(response.body);
+        RainValuePast = weatherData['daily']['rain_sum'][0];
+        print("RainValuePast: ",RainValuePast, " mm");
+        RainValueForecast = weatherData['daily']['rain_sum'][1];
+        print("RainValueForecast: ",RainValueForecast, " mm");
+        currentTemp = weatherData['daily']['temperature_2m_min'][1];
+        print ("minTemperatur: ",currentTemp, " C");
+        let RainValueTotal = (RainValuePast + RainValueForecast) / 2;
+        decideIfToIrrigate(RainValueTotal,currentTemp);
+      };
+ };
+ 
+
+// This function checks if enough rain has fallen and sets the switch off time accordingly
+
+function decideIfToIrrigate(RainValueTotal,currentTemp) {
+  //RainValueTotal=12;
+  //currentTemp=2;
+  let minRain = CONFIG.minRain;
+  print("minimum Rain: ", minRain);
+  let RainValueStr = JSON.stringify(RainValueTotal);
+  if (RainValueTotal < 10 ) { RainValueStr = RainValueStr.slice(0,4)} else { RainValueStr = RainValueStr.slice(0,5)};
+  if (RainValueTotal >= minRain ) {
+    kleineRegnerAbschalten();
+    grosseRegnerAbschalten();
+    TropfSchlauchAbschalten();
+    messageWhatsapp = "Heute+keine+Beregnung…+Niederschlag:+" + RainValueStr + "mm";
+    messageNtfy = "Heute keine Beregnung…\nNiederschlag: " + RainValueStr + "mm";
+  } else {
+    percentage = (CONFIG.minRain - RainValueTotal) / CONFIG.minRain;
+    if (currentTemp > CONFIG.minTemp) {
+      messageWhatsapp = "Niederschlag:+" + RainValueStr + "mm";
+      messageNtfy = "\nNiederschlag: " + RainValueStr + "mm";
+      kleineRegnerEinschalten();
+    } else {
+      kleineRegnerAbschalten();
+      grosseRegnerAbschalten();
+      TropfSchlauchAbschalten();
+      messageWhatsapp = "Heute+keine+Beregnung…%0AEs+ist+zu+kalt:+" +  JSON.stringify(currentTemp) + "°C";
+      messageNtfy = "Heute keine Beregnung…\nEs ist zu kalt: " +  JSON.stringify(currentTemp) + "°C";
+    }
+  };
+  timerMessages = Timer.set(2*1000,false,send_message);
+};
+
+function zeit_berechnen(regner) {
+  let zeit = Math.round(maxBeregnungsZeit[regner]* percentage);
+  let percentageStr = Math.round(percentage *100);
+  print("berechnete Beregnungszeit: ", zeit/60, " min");
+  print("minimum Beregnungszeit: ", minBeregnungsZeit[regner]/60, " min");
+  messageWhatsapp += "+%0ABeregnungszeit:+" +  JSON.stringify(Math.round(zeit/60)) + "min+(" + JSON.stringify(percentageStr) + "%)" ;
+  messageNtfy += "\nBeregnungszeit: " +  JSON.stringify(Math.round(zeit/60)) + "min (" + JSON.stringify(percentageStr) + "%)" ;
+  if (zeit < minBeregnungsZeit[regner]) {
+    zeit = minBeregnungsZeit[regner];
+    messageWhatsapp += "+%0Aminimum+Beregnungszeit:+" +  JSON.stringify(Math.round(zeit/60)) + "min" ;
+    messageNtfy += "\nminimum Beregnungszeit: " +  JSON.stringify(Math.round(zeit/60)) + "min" ;	
+  };
+  return zeit;
+};
+
+ 
+function kleineRegnerEinschalten() { 
+  if (maxBeregnungsZeit[0] > 60) {
+    let zeit = zeit_berechnen(0);
+    print("kleine Regner fuer ", zeit/60, " Minuten eingeschaltet...");
+    Shelly.call("Switch.Set", {"id": 0, "on": true, "toggle_after": zeit});
+    timerGrosseRegner = Timer.set(zeit*1000,false,grosseRegnerEinschalten);
+  } else {
+    print("kleine Regner deaktiviert...");
+    kleineRegnerAbschalten();
+    grosseRegnerEinschalten()
+  };
+};
+
+function kleineRegnerAbschalten() {
+  Shelly.call("Switch.Set", {"id": 0, "on": false});
+};
+
+function grosseRegnerEinschalten() {
+  if (maxBeregnungsZeit[1] > 60) {
+    let zeit = zeit_berechnen(1);
+    print("grosse Regner fuer ", zeit/60, " Minuten eingeschaltet...");
+    let url = "http://192.168.33.2/relay/0?turn=on&timer=" + JSON.stringify(zeit);
+    Shelly.call("http.get",{ url: url , timeout: 3 }, );
+    timerTropfSchlauch = Timer.set(zeit*1000,false,TropfSchlauchEinschalten);
+  } else {
+    print("grosse Regner deaktiviert...");
+    grosseRegnerAbschalten();
+    TropfSchlauchEinschalten();
+  };
+};
+
+
+function grosseRegnerAbschalten() {
+  let url = "http://192.168.33.2/relay/0?turn=off";
+  Shelly.call("http.get",{ url: url , timeout: 3 }, );
+};
+
+function TropfSchlauchEinschalten() {
+  if (maxBeregnungsZeit[2] > 60) {
+    let zeit = zeit_berechnen(2);
+    print("Tropf-Schlauch fuer ", zeit/60, " Minuten eingeschaltet...");
+    let url = "http://192.168.33.3/relay/0?turn=on&timer=" + JSON.stringify(zeit);
+    Shelly.call("http.get",{ url: url , timeout: 3 }, );
+  } else {
+    print("Tropf-Schlauch deaktiviert...");
+    TropfSchlauchAbschalten();
+  };
+};
+
+function TropfSchlauchAbschalten() {
+  let url = "http://192.168.33.3/relay/0?turn=off";
+  Shelly.call("http.get",{ url: url , timeout: 3 }, );
+};
+
+
+function send_message() {
+   
+ if (CONFIG.sendWhatsapp) {
+    //messageWhatsapp = Shelly.getComponentStatus("sys").time + "+" + messageWhatsapp;
+    let whatsapp_url  = "https://api.callmebot.com/whatsapp.php?phone=";
+    let phone_number =  "+436643077745";
+    let wap_api_key = "338218";
+    whatsapp_url     += phone_number;
+    whatsapp_url     += "&text=" + messageWhatsapp + "&apikey=" + wap_api_key;
+    Shelly.call( "http.get", { url: whatsapp_url, timeout: 30 }, );
+  };
+  if (CONFIG.sendNtfy) {
+    let ntfy_url = "https://ntfy.gutti80.net/beregnung";
+    //messageNtfy = Shelly.getComponentStatus("sys").time + " " + messageNtfy;
+    Shelly.call( "http.post", { url: ntfy_url, body: messageNtfy, timeout: 30 }, );
+  };
+return;
+};
+
+ 
+ 
+ 
+ /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+ /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+ /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+ 
+ Shelly.addStatusHandler(function(e) {
+  if (e.component === "switch:0") {
+    print("Switch is on, triggered source:", e.delta.source);
+  };
+  if (e.component === "switch:0" && e.delta.output === true && e.delta.source === "loopback") {
+  //if (e.component === "switch:0" && e.delta.output === true ) {
+    maxBeregnungsZeit[0] = Shelly.getComponentConfig("switch", 0).auto_off_delay;
+    minBeregnungsZeit[0] = Shelly.getComponentConfig("switch", 0).auto_on_delay;
+    print(maxBeregnungsZeit[0]);
+    AutoOffAbfragen1();
+ };
+  
+  /// Relais manuell deaktiviert
+  if (e.component === "switch:0" && e.delta.output === false && (e.delta.source !== "timer" && e.delta.source !== "loopback")) {
+    print("Switch is off, triggered source:", e.delta.source);
+    Timer.clear(timerGrosseRegner);
+    Timer.clear(timerTropfSchlauch);
+    print("Timer cleared");
+  };
+  
+});

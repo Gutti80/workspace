@@ -1,0 +1,15 @@
+$montageobj = GetWindowObj("MONTAGE1");
+$mystop = price;
+
+CXL ALLSYMB;
+
+if ( $stop > 0 ) {
+    FocusWindow MYCHART;
+    RemoveALLLines;
+    $stop = 0;
+} else {
+    $stop=1;
+    FocusWindow MYCHART;
+    RemoveALLLines;
+    DrawHorzLineWithPrice($mystop,color("blue"));
+};

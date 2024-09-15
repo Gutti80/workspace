@@ -1,0 +1,31 @@
+let Config = {
+//############# comfig ##########################################################
+//Messages based on https://www.callmebot.com  <--read carefully!!!
+//phone_number      : "+4917112345678", //or e.g. "25a7d32b-0c51-44d8-b11b-c5bc73294abc"
+  phone_number      : "+436643077745",
+//Signal e.g.       : "" empty string, if not needed
+//sig_api_key       : "123456",
+//sig_api_key       : "",
+//WhatsApp e.g.     : "" empty string, if not needed
+//wap_api_key       : "123456",
+  wap_api_key       : "338218"
+//###############################################################################
+};
+
+function send_message(message) {
+  message = Shelly.getComponentStatus("sys").time + "%0A%0A" + message;
+  if (Config.sig_api_key) {
+    let sig_url = "https://signal.callmebot.com/signal/send.php?phone=";
+    sig_url    += Config.phone_number;
+    sig_url    += "&apikey=" + Config.sig_api_key + "&text=";
+    Shelly.call("http.get", {url:sig_url + message,timeout:30});
+  }
+  if (Config.wap_api_key) {
+    let wap_url  = "https://api.callmebot.com/whatsapp.php?phone=";
+    wap_url     += Config.phone_number;
+    wap_url     += "&text=" + message + "&apikey=" + Config.wap_api_key;
+    Shelly.call("http.get", {url:wap_url,timeout:30});
+  }
+};
+
+send_message("Heute+ist+Freitag");

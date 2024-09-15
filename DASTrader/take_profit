@@ -1,0 +1,6 @@
+if ( $mprice_bid >= $take_profit ) {
+    if ( $set_take_profit == 1 ) {
+        $take_profit_reached = 1;
+        $set_sell_order = 1;
+    }
+}

@@ -1,0 +1,10 @@
+if ( $mprice_bid < $mystop ) { 
+    if ( $mprice_bid > 0 ) {
+        if ( $stop == 1 || $trailing_stop == 1 ) {
+                $stop = 0;
+                $trailing_stop = 0;
+                $stop_triggered = 1;
+                $set_sell_order = 1;
+        }
+    }
+}

@@ -1,0 +1,13 @@
+$account_name="TRIBT43862";
+$stop_triggered=0;
+$myposition=0;
+$myaverage=0;
+$buy_price=0;
+$buy_qty = 1;
+$mystop = 0;
+$stop = 0;
+$set_buy_order = 0;
+$set_sell_order = 0;
+$trailing_stop = 0;
+$equity = 0;
+$risiko_prozent = 2;

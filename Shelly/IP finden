@@ -1,0 +1,25 @@
+function check_running() {
+  let url = "https://api.ipify.org?format=json";
+  Shelly.call("http.get",{ url: url , timeout: 3 }, httpcallback);
+}
+
+function httpcallback(response, error_code, error_message) {
+      if (error_code !== 0) {
+      } else {
+        let httpData = JSON.parse(response.body);
+        let ip_adress = httpData['ip'];
+        print(ip_adress);
+        send_whatsapp(ip_adress);
+      };
+ };
+ 
+ function send_whatsapp(running) {
+   let phone = "+436643077745";
+   let api = "338218";
+   let message = running;
+   message = Shelly.getComponentStatus("sys").time + "%0A%0A" + message;
+   let url = "https://api.callmebot.com/whatsapp.php?phone=" + phone + "&apikey=" + api + "&text=" + message;
+   Shelly.call("http.get",{ url: url , timeout: 10 });
+ }
+ 
+ let checkTimer = Timer.set(10*1000,true,check_running);

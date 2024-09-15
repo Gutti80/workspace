@@ -1,0 +1,8 @@
+let messageNtfy ="test123";
+
+function send_message() {
+  let ntfy_url = "https://ntfy.gutti80.net/beregnung";
+    Shelly.call( "HTTP.POST", { url: ntfy_url, body: messageNtfy, timeout: 30 }, );
+};
+
+send_message();

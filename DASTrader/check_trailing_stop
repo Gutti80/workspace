@@ -1,0 +1,6 @@
+if ( $trailing_stop == 1) {
+    $trailing_value = $mprice_bid - $trailing;
+    if ( $mystop < $trailing_value ) {
+        $mystop = $trailing_value;
+    }
+}

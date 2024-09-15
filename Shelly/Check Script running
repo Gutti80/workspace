@@ -1,0 +1,32 @@
+function check_running() {
+  let url = "http://192.168.33.1/rpc/Script.GetStatus?id=1";
+  Shelly.call("http.get",{ url: url , timeout: 3 }, httpcallback);
+}
+
+function httpcallback(response, error_code, error_message) {
+      if (error_code !== 0) {
+      } else {
+        let httpData = JSON.parse(response.body);
+        let running = httpData['running'];
+        print(running);
+        if (running === false) { send_whatsapp() };
+      };
+ };
+ 
+ function send_whatsapp() {
+   let phone = "+436643077745";
+   let api = "338218";
+   let message = "Bewäserungs-Script+neu+gestartet";
+   message = Shelly.getComponentStatus("sys").time + "%0A%0A" + message;
+   let url = "https://api.callmebot.com/whatsapp.php?phone=" + phone + "&apikey=" + api + "&text=" + message;
+   Shelly.call("http.get",{ url: url , timeout: 10 });
+   start_script();
+ }
+ 
+ function start_script() {
+   let url = "http://192.168.33.1/rpc/Script.Start?id=1";
+   Shelly.call("http.get",{ url: url , timeout: 3 }, );
+ }
+ 
+ 
+ let checkTimer = Timer.set(60*1000,true,check_running);

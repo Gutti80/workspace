@@ -1,0 +1,8 @@
+if ( $trailing_stop == 0 ) {
+   $trailing_stop = 1;
+   $stop = 0;
+
+} else {
+   $trailing_stop = 0;
+   $mybreakeven_set = 0;
+};

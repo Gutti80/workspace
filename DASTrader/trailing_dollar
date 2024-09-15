@@ -1,0 +1,5 @@
+$dollar_temp = $stop_dollar / $mypos;
+$trailing = $dollar_temp;
+$trailing_stop = 1;
+$stop = 0;
+DelVar("$DOLLAR_TEMP");

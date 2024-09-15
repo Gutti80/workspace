@@ -1,0 +1,15 @@
+SwitchTWnd;
+
+if ( $mprice_ask > $mybreakeven ) {
+    CXL ALLSYMB; 
+
+    StopPrice = $freies_kapital * 0.99 * $add_percent;
+    $limit_ask = Ask + $ask_spread;
+    StopPrice = StopPrice / $limit_ask;
+    StopPrice = Round;
+
+    TogSShare;
+
+    ROUTE="Limit"; Price=$limit_ask; Share=StopPrice; TIF=DAY+; BUY=Send;
+    $set_to_breakeven = 1;
+}

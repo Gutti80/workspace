@@ -1,0 +1,36 @@
+if ( Ask < 1 ) { 
+   $ask_spread = 0.005;
+} else { 
+   $ask_spread = 0.05;
+};
+
+if ( $sell_percent == 1 ) {
+    if ( $side == "long" ) { 
+        CXL ALLSYMB; 
+        Route="LIMIT";Share=Pos;Price=Bid-$ask_spread;ACCOUNT=$account_name;TIF=DAY;SEND=Reverse;
+    };
+    if ( $side == "short" ) { 
+        CXL ALLSYMB; 
+        Route="LIMIT";Share=Pos;Price=Bid-$ask_spread;ACCOUNT=$account_name;TIF=DAY;SEND=Reverse;
+    };
+    $set_sell_order = 0;
+} else {
+    if ( $side == "long" ) { 
+        if ( Bid > AvgCost ) { 
+            CXL ALLSYMB; 
+            Route="LIMIT";Share=Pos*$sell_percent;Price=Bid-$ask_spread;ACCOUNT=$account_name;TIF=DAY;SEND=Reverse;
+            $set_take_profit = 0;
+            $take_profit_reached = 0;
+            $mystop = $mybreakeven;
+            $mybreakeven_set = 1;
+        };
+    };
+    if ( $side == "short" ) { 
+        if ( Ask < AvgCost) { 
+            CXL ALLSYMB; 
+            Route="LIMIT";Share=Pos*$sell_percent;Price=Bid-$ask_spread;ACCOUNT=$account_name;TIF=DAY;SEND=Reverse;
+            $mystop = $mybreakeven;
+            $mybreakeven_set = 1;
+        };
+    };
+}

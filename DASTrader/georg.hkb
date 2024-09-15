@@ -1,0 +1,170 @@
+ButtonBackColor:31:0
+ButtonBackColor:30:0
+ButtonBackColor:29:13158600
+ButtonBackColor:28:255
+ButtonBackColor:27:13158600
+ButtonBackColor:26:13158600
+ButtonBackColor:25:13158600
+ButtonBackColor:24:12615680
+ButtonBackColor:23:255
+ButtonBackColor:22:255
+ButtonBackColor:21:255
+ButtonBackColor:20:255
+ButtonBackColor:19:255
+ButtonBackColor:18:255
+ButtonBackColor:17:255
+ButtonBackColor:16:255
+ButtonBackColor:15:255
+ButtonBackColor:14:255
+ButtonBackColor:13:255
+ButtonBackColor:12:255
+ButtonBackColor:11:0
+ButtonBackColor:10:65280
+ButtonBackColor:9:65535
+ButtonBackColor:8:0
+ButtonBackColor:7:16744448
+ButtonBackColor:6:16744448
+ButtonBackColor:5:16744448
+ButtonBackColor:4:16744448
+ButtonBackColor:3:13158600
+ButtonBackColor:2:16744448
+ButtonBackColor:1:65280
+ButtonBackColor:0:65280
+ButtonName:31:Hotkeys
+ButtonName:30:Shares
+ButtonName:29:DelVar
+ButtonName:28:REAL
+ButtonName:27:Training
+ButtonName:26:short
+ButtonName:25:long
+ButtonName:24:Stop on/off
+ButtonName:23:SELL All
+ButtonName:22:Sell 3/4
+ButtonName:21:Sell 1/2
+ButtonName:20:Sell 1/4
+ButtonName:19:Trailing 75$
+ButtonName:18:Trailing 50$
+ButtonName:17:Trailing 30$
+ButtonName:16:Trailing 15$
+ButtonName:15:Trailing 0.3
+ButtonName:14:Trailing 0.2
+ButtonName:13:Trailing 0.15
+ButtonName:12:Trailing 0.1
+ButtonName:11: 
+ButtonName:10:Add
+ButtonName:9:B/E
+ButtonName:8:  sss
+ButtonName:7:100%
+ButtonName:6:75%
+ButtonName:5:50%
+ButtonName:4:25%
+ButtonName:3:CXL Order
+ButtonName:2:BUY Price Stop
+ButtonName:1:BUY Price
+ButtonName:0:BUY Full
+ButtonRow:31:18
+ButtonRow:30:17
+ButtonRow:29:16
+ButtonRow:28:15
+ButtonRow:27:15
+ButtonRow:26:14
+ButtonRow:25:14
+ButtonRow:24:13
+ButtonRow:23:12
+ButtonRow:22:11
+ButtonRow:21:11
+ButtonRow:20:11
+ButtonRow:19:10
+ButtonRow:18:10
+ButtonRow:17:10
+ButtonRow:16:10
+ButtonRow:15:9
+ButtonRow:14:9
+ButtonRow:13:9
+ButtonRow:12:9
+ButtonRow:11:8
+ButtonRow:10:7
+ButtonRow:9:6
+ButtonRow:8:5
+ButtonRow:7:4
+ButtonRow:6:4
+ButtonRow:5:4
+ButtonRow:4:4
+ButtonRow:3:3
+ButtonRow:2:2
+ButtonRow:1:1
+ButtonRow:0:0
+TotalButtonNum::32
+ButtonScript:31:hotkey
+ButtonScript:30:~ 175:$MYSYMB=GetWindowObj("MYCHART").SYMBOL;~0D~0A$MYPOS
+=GetAccountObj($ACCOUNT_NAME).getposition($MYSYMB).
+share;~0D~0A$MYAVERAGE=GetAccountObj($ACCOUNT_NAME)
+.getposition($MYSYMB).avgcost;
+ButtonScript:29:Delvar("$SET_TO_BREAKEVEN");
+ButtonScript:28:~ 115:$account_name="REAL";~0D~0AACCOUNT=REAL;~0D~0AFocus
+Window account_window;~0D~0ALoadSetting red.cst;~0D
+~0AMsgBox("REAL ACCOUNT!!!");
+ButtonScript:27:~ 102:$account_name="TRIBT43862";~0D~0AACCOUNT=TRIBT43862
+;~0D~0AFocusWindow account_window;~0D~0ALoadSetting
+ grey.cst;~0D~0A
+ButtonScript:26:$side="short";
+ButtonScript:25:$side="long";
+ButtonScript:24:ExecHotkey("stop_onoff");
+ButtonScript:23:ExecHotkey("SELL_Full");
+ButtonScript:22:$sell_percent = 0.75;~0D~0AExecHotkey("SELL_Half");
+ButtonScript:21:$sell_percent = 0.5;~0D~0AExecHotkey("SELL_Half");
+ButtonScript:20:$sell_percent = 0.25;~0D~0AExecHotkey("SELL_Half");
+ButtonScript:19:$dollar = 75;~0D~0AExecHotkey("trailing_dollar");
+ButtonScript:18:$dollar = 50;~0D~0AExecHotkey("trailing_dollar");
+ButtonScript:17:$dollar = 30;~0D~0AExecHotkey("trailing_dollar");
+ButtonScript:16:$dollar = 15;~0D~0AExecHotkey("trailing_dollar");
+ButtonScript:15:$trailing = 0.3;~0D~0AExecHotkey("trailing");~0D~0A
+ButtonScript:14:$trailing = 0.2;~0D~0AExecHotkey("trailing");~0D~0A
+ButtonScript:13:$trailing = 0.15;~0D~0AExecHotkey("trailing");~0D~0A
+ButtonScript:12:$trailing = 0.1;~0D~0AExecHotkey("trailing");~0D~0A
+ButtonScript:11:$set_buy_order=0;
+ButtonScript:10:ExecHotkey("Add");
+ButtonScript:9:ExecHotkey("BreakEven");
+ButtonScript:8:$equity = SShare;~0D~0ATogSShare;
+ButtonScript:7:;$buy_qty = 1;
+ButtonScript:6:$buy_qty = 0.75;
+ButtonScript:5:$buy_qty = 0.5;
+ButtonScript:4:$buy_qty = 0.25;
+ButtonScript:3:$buy_price = 0;
+ButtonScript:2:$buy_price_stop = 1;~0D~0A$buy_price_stopprice = Price;
+ButtonScript:1:~ 108:if ( SShare > 0 ) {~0D~0A   $buy_price = 1;~0D~0A  
+ $max_price = Price;~0D~0A} else {~0D~0A   MsgBox("
+Invalid Shares");~0D~0A}~0D~0A
+ButtonScript:0:ExecHotkey("BUY_Full");~0D~0A~0D~0A~0D~0A
+ButtonTextColor:31:16777215
+ButtonTextColor:30:16777215
+ButtonTextColor:29:0
+ButtonTextColor:28:0
+ButtonTextColor:27:0
+ButtonTextColor:26:0
+ButtonTextColor:25:0
+ButtonTextColor:24:0
+ButtonTextColor:23:0
+ButtonTextColor:22:0
+ButtonTextColor:21:0
+ButtonTextColor:20:0
+ButtonTextColor:19:0
+ButtonTextColor:18:0
+ButtonTextColor:17:0
+ButtonTextColor:16:0
+ButtonTextColor:15:0
+ButtonTextColor:14:0
+ButtonTextColor:13:0
+ButtonTextColor:12:0
+ButtonTextColor:11:0
+ButtonTextColor:10:0
+ButtonTextColor:9:0
+ButtonTextColor:8:0
+ButtonTextColor:7:0
+ButtonTextColor:6:0
+ButtonTextColor:5:0
+ButtonTextColor:4:0
+ButtonTextColor:3:0
+ButtonTextColor:2:0
+ButtonTextColor:1:0
+ButtonTextColor:0:0

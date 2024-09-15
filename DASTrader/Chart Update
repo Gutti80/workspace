@@ -1,0 +1,38 @@
+ExecHotkey("check_account");
+ExecHotkey("update_account");
+
+RemoveALLLines;
+
+ExecHotkey("check_buy_price");
+if ( $set_buy_order == 1 ) { 
+   $montageobj.exechotkey("BUY");
+}
+
+if ( $mypos > 0 ) {
+   $freies_kapital = $equity - $myposition;
+
+   DrawHorzLineWithPrice($myaverage,color("yellow"));
+   
+   ExecHotkey("breakeven_berechnen");
+
+   ExecHotkey("check_trailing_stop");
+
+   ExecHotkey("take_profit");
+   
+   if ( $set_take_profit == 1 ) {
+      DrawHorzLineWithPrice($take_profit,color("magenta"));
+   }
+
+   if ( $stop == 1 || $trailing_stop == 1 ) {
+      DrawHorzLineWithPrice($mystop,color("blue"));
+   };
+
+   ExecHotkey("check_breakeven");
+
+   ExecHotkey("check_stop");
+
+   if ( $set_sell_order == 1 ) { 
+      if ( $take_profit_reached == 1) { $sell_percent = 0.5; } else { $sell_percent = 1; }
+      $montageobj.exechotkey("SELL");
+   }
+}

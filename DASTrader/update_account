@@ -1,0 +1,10 @@
+$montageobj = GetWindowObj("MONTAGE1");
+$mysymb = GetWindowObj("MONTAGE1").SYMBOL;
+$mprice_bid = $montageobj.BID;
+$mprice_ask = $montageobj.ASK;
+
+$mypos = GetAccountObj($account_name).getposition($mysymb).share;
+if ( $mypos < 0 ) { $side = "short"; } else { $side = "long"; };
+
+$myaverage = GetAccountObj($account_name).getposition($mysymb).avgcost;
+$myposition = $myaverage * $mypos;

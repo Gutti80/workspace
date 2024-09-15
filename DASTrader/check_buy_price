@@ -1,0 +1,15 @@
+if ( $buy_price == 1 ) {
+   DrawHorzLineWithPrice($max_price,color(255,0,127));
+   if ( $buy_price_stop == 1 ) { 
+      DrawHorzLineWithPrice($buy_price_stopprice,color("blue"));
+   }
+   $stop_triggered = 0;
+   if ( $mprice_ask < $max_price ) {
+      $buy_price = 0;
+      $set_buy_order = 1;
+   }
+} else {
+   if ( $stop_triggered == 1 ) {
+      DrawHorzLineWithPrice($mystop,color("yellow"));
+   }
+}

@@ -1,0 +1,14 @@
+if ( $stop == 1 || $trailing_stop == 1 ) {
+    $stop= 0;
+    $trailing_stop = 0;
+    $mybreakeven_stop = 0;
+} else {
+    $mystop = Price;
+    $stop = 1;
+    $trailing_stop = 0;
+    if ( BID < $mybreakeven ) {
+        $mybreakeven_set = 0;
+    } else {
+        $mybreakeven_set = 1;
+    }
+};

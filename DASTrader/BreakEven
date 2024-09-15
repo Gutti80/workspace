@@ -1,0 +1,4 @@
+$mystop = $mybreakeven;
+$mybreakeven_set = 1;
+$trailing_stop = 0;
+$stop = 1;

@@ -1,0 +1,54 @@
+if ( $mprice_ask == 0 ) {
+    MsgBox("Kein Preis vorhanden!!!");
+    return;
+}
+
+$equity = SShare;
+$risiko_prozent = 2;
+$risiko_prozent = $risiko_prozent / 100;
+
+SwitchTWnd;
+CXL ALLSYMB; 
+
+StopPrice = $equity * $buy_qty;
+StopPrice = StopPrice * 0.99;
+DelVar("BUY_PROZENT");
+$actual = StopPrice;
+$mybreakeven_set = 0;
+if ( Ask < 1) { 
+    $ask_spread = 0.005;
+} else { 
+    $ask_spread = 0.05;
+};
+$limit_ask = Ask + $ask_spread;
+StopPrice = StopPrice / $limit_ask;
+StopPrice = Round;
+
+TogSShare;
+
+ROUTE="Limit"; Price=$limit_ask;Share=StopPrice;ACCOUNT=$account_name;TIF=DAY+; BUY=Send;
+
+$diff = $actual * $risiko_prozent;
+$diff = $diff / Share;
+$aktien_anzahl = Share;
+if ( $buy_price_stop == 1 ) { 
+    $mystop = $buy_price_stopprice;
+} else {
+    $mystop = Ask - $diff;
+}
+DelVar("$DIFF");
+
+$take_profit = $actual * ( 2 * $risiko_prozent);
+$take_profit = $take_profit / Share;
+$take_profit = Bid + $take_profit;
+$set_take_profit = 1;
+$take_profit_reached = 0;
+
+$trailing_stop = 0;
+$stop = 1;
+$stop_triggered = 0;
+$mybreakeven_set = 0;
+$buy_price = 0;
+$buy_price_stop = 0;
+$set_buy_order = 0;
+$set_sell_order = 0;

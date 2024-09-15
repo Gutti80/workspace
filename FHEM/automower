@@ -1,0 +1,6 @@
+([shelly_balkon:humidity] > 90 ) ( 
+    set automower_karin Park 420,
+    set automower_eltern Park 420, 
+	{ if ( ReadingsVal("automower_karin","planner_restrictedReason","") ne "PARK_OVERRIDE" ) { fhem("msg Automower geparkt wegen Regen!!!") } }
+)
+DOELSE

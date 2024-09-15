@@ -1,0 +1,7 @@
+if ( $myaverage < 1) { 
+    $mybreakeven = $myaverage + 0.005;
+    $mybreakeven_safety = $myaverage + 0.05;
+} else { 
+    $mybreakeven = $myaverage + 0.02;
+    $mybreakeven_safety = $myaverage + 0.1;
+};

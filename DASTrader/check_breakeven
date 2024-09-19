@@ -1,7 +1,7 @@
 if ( $mprice_bid <= $mybreakeven_safety ) {
     if ( $stop == 1 ) {
         if ( $mybreakeven_set == 0 ) {
-            DrawHorzLineWithPrice($mybreakeven_safety,color("green"));
+            DrawHorzLineWithPrice($mybreakeven_safety,color("cyan"));
         }
     }
     } else {

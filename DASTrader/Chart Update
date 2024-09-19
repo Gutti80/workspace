@@ -4,9 +4,12 @@ ExecHotkey("update_account");
 RemoveALLLines;
 
 ExecHotkey("check_buy_price");
-if ( $set_buy_order == 1 ) { 
+
+if ( $set_buy_order == 1 ) {
    $montageobj.exechotkey("BUY");
 }
+
+$set_sell_order = 0;
 
 if ( $mypos > 0 ) {
    $freies_kapital = $equity - $myposition;
@@ -17,12 +20,6 @@ if ( $mypos > 0 ) {
 
    ExecHotkey("check_trailing_stop");
 
-   ExecHotkey("take_profit");
-   
-   if ( $set_take_profit == 1 ) {
-      DrawHorzLineWithPrice($take_profit,color("magenta"));
-   }
-
    if ( $stop == 1 || $trailing_stop == 1 ) {
       DrawHorzLineWithPrice($mystop,color("blue"));
    };
@@ -31,8 +28,17 @@ if ( $mypos > 0 ) {
 
    ExecHotkey("check_stop");
 
+   if ( $take_profit_onoff == 1) {
+      ExecHotkey("take_profit");
+      
+      if ( $set_take_profit == 1 ) {
+         DrawHorzLineWithPrice($take_profit,color("magenta"));
+      }
+   }
+
    if ( $set_sell_order == 1 ) { 
       if ( $take_profit_reached == 1) { $sell_percent = 0.5; } else { $sell_percent = 1; }
       $montageobj.exechotkey("SELL");
    }
 }
+$price_now = $mprice_ask;

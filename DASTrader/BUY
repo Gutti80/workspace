@@ -1,3 +1,6 @@
+SwitchTWnd;
+CXL ALLSYMB; 
+
 if ( $mprice_ask == 0 ) {
     MsgBox("Kein Preis vorhanden!!!");
     return;
@@ -7,8 +10,6 @@ $equity = SShare;
 $risiko_prozent = 2;
 $risiko_prozent = $risiko_prozent / 100;
 
-SwitchTWnd;
-CXL ALLSYMB; 
 
 StopPrice = $equity * $buy_qty;
 StopPrice = StopPrice * 0.99;
@@ -31,16 +32,15 @@ ROUTE="Limit"; Price=$limit_ask;Share=StopPrice;ACCOUNT=$account_name;TIF=DAY+; 
 $diff = $actual * $risiko_prozent;
 $diff = $diff / Share;
 $aktien_anzahl = Share;
-if ( $buy_price_stop == 1 ) { 
+if ( $buy_price_stop == 1 ) {
     $mystop = $buy_price_stopprice;
 } else {
     $mystop = Ask - $diff;
 }
-DelVar("$DIFF");
 
-$take_profit = $actual * ( 2 * $risiko_prozent);
-$take_profit = $take_profit / Share;
-$take_profit = Bid + $take_profit;
+$diff_take_profit = $diff *2 ;
+$take_profit = Bid + $diff_take_profit;
+
 $set_take_profit = 1;
 $take_profit_reached = 0;
 

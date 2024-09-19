@@ -1,4 +1,7 @@
-$mystop = $mybreakeven;
-$mybreakeven_set = 1;
-$trailing_stop = 0;
-$stop = 1;
+if ( $mprice_bid > $mybreakeven) {
+    $mystop = $mybreakeven;
+    Price = $mybreakeven;
+    $mybreakeven_set = 1;
+    $trailing_stop = 0;
+    $stop = 1;
+}

@@ -11,3 +11,6 @@ $set_sell_order = 0;
 $trailing_stop = 0;
 $equity = 0;
 $risiko_prozent = 2;
+$set_take_profit = 0;
+$take_profit = 0;
+$take_profit_onoff = 0;
